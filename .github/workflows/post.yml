@@ -1,20 +1,37 @@
-name: fb-post-test
+name: fb-post
+
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: "20 14 * * *"  # 7:50 PM IST daily
+  workflow_dispatch:        # run it manually from the Actions tab
+    inputs:
+      message:
+        description: "Post message"
+        required: true
+        default: "Hello from GitHub Actions"
+  push:
+    branches: [ main ]      # optional: run on each push to main
+  schedule:                 # optional: runs by UTC time
+    - cron: "20 14 * * *"   # 19:50 IST daily (14:20 UTC)
 
 jobs:
   post:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11" }
-      - run: pip install -r requirements.txt || pip install requests python-dotenv
-      - env:
-          FB_GRAPH_VERSION: ${{ secrets.FB_GRAPH_VERSION }}
-          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
-          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
         run: |
-          python fb_poster.py --mode=text --message "Hello from GitHub Actions"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || pip install requests python-dotenv
+
+      - name: Run poster
+        env:
+          FB_GRAPH_VERSION: ${{ secrets.FB_GRAPH_VERSION }}
+          FB_PAGE_ID:       ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN:    ${{ secrets.FB_PAGE_TOKEN }}
+        run: |
+          python fb_poster.py --mode=text --message "${{ github.event.inputs.message || 'Hello from CI' }}"
