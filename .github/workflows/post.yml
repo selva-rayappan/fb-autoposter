@@ -1,0 +1,20 @@
+name: fb-post-test
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "20 14 * * *"  # 7:50 PM IST daily
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt || pip install requests python-dotenv
+      - env:
+          FB_GRAPH_VERSION: ${{ secrets.FB_GRAPH_VERSION }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+        run: |
+          python fb_poster.py --mode=text --message "Hello from GitHub Actions"
