@@ -1,0 +1,4 @@
+mode,message,link,image_url,image_path,images,schedule
+text,"Hello, world from API! Check our site.",https://tinkerhub.co.in,,,,2025-11-13 09:30
+photo,"New mockups live!",,https://example.com/hero.jpg,,,2025-11-13 10:00
+multi,"Lookbook week 46",,,"","https://img1.jpg|https://img2.jpg",2025-11-13 11:00
